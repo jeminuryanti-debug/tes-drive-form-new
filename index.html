@@ -190,60 +190,6 @@ body{padding-bottom:40px;}
   </div>
 </div>
 
-<!-- SETUP GOOGLE SHEETS -->
-<div class="setup-card">
-  <div class="setup-toggle" onclick="toggleSetup()">
-    <div class="setup-toggle-left">
-      <div class="setup-icon">
-        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-      </div>
-      <div>
-        <div class="setup-toggle-label">⚙️ Konfigurasi Google Sheets</div>
-        <div class="setup-toggle-sub" id="setup-sub">Klik untuk mengatur integrasi laporan</div>
-      </div>
-    </div>
-    <svg class="chevron" id="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-  <div class="setup-body" id="setup-body">
-    <div class="url-field">
-      <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">URL Apps Script <span class="req">*</span></label>
-      <input type="url" id="webappUrl" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveUrl()" />
-    </div>
-    <div class="url-hint">
-      1. Buka <a href="https://script.google.com" target="_blank">script.google.com</a> → Project baru<br>
-      2. Paste kode di bawah → <strong>Deploy → New Deployment → Web App</strong><br>
-      3. Akses: <strong>Anyone</strong> → Salin URL → paste di atas
-    </div>
-    <div class="code-toggle" onclick="toggleCode()">📋 Lihat / sembunyikan kode Apps Script</div>
-    <pre class="script-code" id="appscript-code" style="display:none">function doPost(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName("Data Tes Drive") || ss.insertSheet("Data Tes Drive");
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(["Timestamp","Nama Driver","Jenis SIM","Nama Penguji",
-      "NIK Penguji","Tanggal Tes","Aspek 1 - Pedal&Transmisi",
-      "Aspek 2 - Kemudi&Kontrol","Aspek 3 - Pengetahuan&Safety",
-      "Aspek 4 - Persiapan","Aspek 5 - Konsentrasi",
-      "Aspek 6 - Spion&Sein","Aspek 7 - Mendahului&Manuver",
-      "Aspek 8 - Parkir","Aspek 9 - Rambu&Aturan",
-      "Aspek 10 - Sikap&Etika","Total Nilai","Nilai Akhir",
-      "Keterangan","Kategori","Kelebihan","Area Perbaikan"]);
-  }
-  var d = JSON.parse(e.postData.contents);
-  sheet.appendRow([
-    new Date().toLocaleString("id-ID"),
-    d.namaDriver, d.jenisSIM, d.namaPenguji, d.nikPenguji, d.tanggal,
-    d.n1, d.n2, d.n3, d.n4, d.n5,
-    d.n6, d.n7, d.n8, d.n9, d.n10,
-    d.totalNilai, d.nilaiAkhir, d.keterangan, d.kategori,
-    d.kelebihan, d.perbaikan
-  ]);
-  return ContentService
-    .createTextOutput(JSON.stringify({status:"ok"}))
-    .setMimeType(ContentService.MimeType.JSON);
-}</pre>
-  </div>
-</div>
-
 <!-- DATA PESERTA -->
 <div class="card">
   <div class="section-title">
@@ -374,8 +320,6 @@ function saveUrl() {
 
 // Init
 window.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('webappUrl').value = WEBAPP_URL;
-  document.getElementById('setup-sub').textContent = '✅ URL sudah terpasang';
   buildAspeks();
   document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
 });
