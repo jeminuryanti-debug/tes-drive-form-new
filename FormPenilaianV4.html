@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Form Penilaian Tes Drive</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;min-height:100vh;background:#eef2f7;font-family:'Plus Jakarta Sans',Arial,sans-serif;}
+body{padding-bottom:40px;}
+
+/* ── HEADER ── */
+.hdr{background:linear-gradient(135deg,#1F3864 0%,#2E5FA3 100%);padding:24px 16px 20px;text-align:center;}
+.hdr-logo{width:44px;height:44px;background:rgba(255,255,255,0.15);border-radius:12px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;}
+.hdr-logo svg{width:26px;height:26px;fill:#fff;}
+.hdr h1{color:#fff;font-size:18px;font-weight:800;letter-spacing:-0.2px;}
+.hdr p{color:#93c5fd;font-size:12px;margin-top:2px;}
+.hdr-badge{display:inline-flex;align-items:center;gap:5px;margin-top:10px;background:rgba(255,255,255,0.14);border-radius:20px;padding:5px 14px;font-size:11px;color:#bfdbfe;font-weight:600;}
+
+/* ── SETUP SHEET (collapsible) ── */
+.setup-card{margin:12px 12px 0;background:#fff;border-radius:14px;overflow:hidden;border:1.5px solid #e5edff;box-shadow:0 2px 8px rgba(31,56,100,0.06);}
+.setup-toggle{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;user-select:none;}
+.setup-toggle-left{display:flex;align-items:center;gap:8px;}
+.setup-icon{width:28px;height:28px;background:#e8f0fe;border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.setup-icon svg{width:15px;height:15px;fill:#2E5FA3;}
+.setup-toggle-label{font-size:12px;font-weight:700;color:#1F3864;}
+.setup-toggle-sub{font-size:10px;color:#6b7280;margin-top:1px;}
+.chevron{width:18px;height:18px;transition:transform .2s;color:#9ca3af;}
+.chevron.open{transform:rotate(180deg);}
+.setup-body{padding:0 16px 14px;display:none;}
+.setup-body.open{display:block;}
+.url-field input{width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:11px 13px;font-size:13px;font-family:inherit;color:#111827;background:#f9fafb;}
+.url-field input:focus{outline:none;border-color:#2E5FA3;background:#fff;}
+.url-hint{font-size:10px;color:#9ca3af;margin-top:5px;line-height:1.5;}
+.url-hint a{color:#2E5FA3;text-decoration:none;}
+.script-code{background:#f1f5f9;border-radius:8px;padding:10px;margin-top:10px;font-size:10px;color:#374151;line-height:1.7;font-family:monospace;white-space:pre-wrap;word-break:break-all;border:1px solid #e2e8f0;}
+.code-toggle{font-size:10px;color:#2E5FA3;cursor:pointer;margin-top:6px;font-weight:600;}
+
+/* ── CARD ── */
+.card{background:#fff;margin:10px 12px 0;border-radius:14px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,0.06);border:1px solid #f0f0f0;}
+.section-title{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:#1F3864;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #EEF2FF;}
+.section-title svg{width:14px;height:14px;fill:#2E5FA3;}
+
+/* ── FIELDS ── */
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:12px 13px;font-size:14px;font-family:inherit;color:#111827;background:#fafafa;-webkit-appearance:none;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#2E5FA3;background:#fff;box-shadow:0 0 0 3px rgba(46,95,163,0.08);}
+.field textarea{resize:vertical;min-height:70px;}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236b7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.req{color:#ef4444;margin-left:2px;}
+
+/* ── LEGEND ── */
+.legend{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:14px;}
+.leg-item{text-align:center;padding:8px 2px;border-radius:9px;font-size:10px;font-weight:600;line-height:1.3;}
+.leg-item .lg-n{font-size:20px;font-weight:800;display:block;}
+.l1{background:#fef2f2;color:#b91c1c;}
+.l2{background:#fff7ed;color:#c2410c;}
+.l3{background:#eff6ff;color:#1d4ed8;}
+.l4{background:#f0fdf4;color:#15803d;}
+.l5{background:#dcfce7;color:#166534;}
+
+/* ── PROGRESS ── */
+.prog-wrap{margin-bottom:12px;}
+.prog-top{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-bottom:5px;}
+.prog-top span:last-child{font-weight:700;color:#1F3864;}
+.prog-bar{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#2E5FA3,#3b82f6);border-radius:99px;transition:width .35s ease;}
+
+/* ── ASPEK TABLE ── */
+.aspek-hdr{display:grid;grid-template-columns:24px 1fr 44px 100px;gap:4px;padding:9px 10px;background:#1F3864;border-radius:10px 10px 0 0;font-size:10px;font-weight:700;color:#fff;text-align:center;}
+.aspek-hdr span:nth-child(2){text-align:left;}
+.aspek-wrap{border:1.5px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;overflow:hidden;}
+.aspek-row{display:grid;grid-template-columns:24px 1fr 44px 100px;gap:4px;align-items:center;padding:10px 10px;border-bottom:1px solid #f3f4f6;transition:background .1s;}
+.aspek-row:last-child{border-bottom:none;}
+.aspek-row:nth-child(even){background:#fafbff;}
+.aspek-row.done{background:#f0fff4 !important;}
+.ar-no{font-size:10px;color:#9ca3af;text-align:center;}
+.ar-name{font-size:12px;color:#374151;line-height:1.4;}
+.ar-bobot{font-size:11px;color:#6b7280;text-align:center;font-weight:700;}
+.nilai-sel{display:flex;gap:3px;justify-content:center;}
+.nv-in{display:none;}
+.nv-lb{display:flex;align-items:center;justify-content:center;width:27px;height:27px;border-radius:7px;border:1.5px solid #d1d5db;font-size:12px;font-weight:700;cursor:pointer;color:#9ca3af;background:#fff;transition:all .12s;touch-action:manipulation;}
+.nv-lb:active{transform:scale(.92);}
+.nv-in:checked+.nv-lb{color:#fff;border-color:transparent;}
+.nv-in.v1:checked+.nv-lb{background:#b91c1c;}
+.nv-in.v2:checked+.nv-lb{background:#c2410c;}
+.nv-in.v3:checked+.nv-lb{background:#1d4ed8;}
+.nv-in.v4:checked+.nv-lb{background:#15803d;}
+.nv-in.v5:checked+.nv-lb{background:#166534;}
+
+/* ── LIVE SCORE ── */
+.skor-panel{margin-top:12px;background:linear-gradient(135deg,#EEF2FF,#E0E7FF);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border:1px solid #c7d2fe;}
+.skor-left .sl-label{font-size:12px;font-weight:700;color:#1F3864;}
+.skor-left .sl-sub{font-size:10px;color:#6b7280;margin-top:2px;}
+.skor-val{font-size:26px;font-weight:800;color:#1F3864;letter-spacing:-1px;}
+.skor-max{font-size:13px;font-weight:500;color:#9ca3af;}
+
+/* ── ERROR ── */
+.err{background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:11px 14px;font-size:12px;color:#b91c1c;margin-top:10px;display:none;line-height:1.5;}
+
+/* ── SUBMIT BUTTON ── */
+.btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,#1F3864,#2E5FA3);color:#fff;font-size:16px;font-weight:800;border:none;border-radius:12px;cursor:pointer;font-family:inherit;margin-top:14px;letter-spacing:.1px;box-shadow:0 4px 12px rgba(31,56,100,0.25);}
+.btn-submit:active{transform:scale(.98);}
+
+/* ── OVERLAY / MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:22px 22px 0 0;width:100%;max-height:94vh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slideUp .3s cubic-bezier(.22,1,.36,1);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* Modal header variants */
+.mhdr{padding:28px 20px 22px;text-align:center;position:relative;}
+.mhdr-lulus{background:linear-gradient(135deg,#166534,#16a34a);}
+.mhdr-dipert{background:linear-gradient(135deg,#1d4ed8,#3b82f6);}
+.mhdr-tidak{background:linear-gradient(135deg,#991b1b,#dc2626);}
+.mhdr-close{position:absolute;top:12px;right:14px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.m-emoji{font-size:52px;line-height:1;}
+.m-status{font-size:26px;font-weight:800;color:#fff;margin-top:6px;letter-spacing:-0.3px;}
+.m-ket-text{font-size:14px;color:rgba(255,255,255,.85);margin-top:4px;font-weight:600;}
+.m-skor-text{font-size:12px;color:rgba(255,255,255,.65);margin-top:4px;}
+
+/* Modal body */
+.mbody{padding:18px 16px 32px;}
+
+/* NA Box */
+.na-box{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.na-item{text-align:center;padding:14px 6px;border-radius:12px;}
+.na-num{font-size:30px;font-weight:800;line-height:1;}
+.na-lbl{font-size:10px;color:#6b7280;margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.na-ket-text{font-size:14px;font-weight:700;line-height:1.2;}
+
+/* Info rows */
+.info-section{background:#f8faff;border-radius:12px;padding:12px 14px;margin-bottom:12px;}
+.m-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;font-size:13px;border-bottom:1px solid #f0f0f0;}
+.m-row:last-child{border-bottom:none;}
+.m-lbl{color:#9ca3af;flex-shrink:0;}
+.m-val{font-weight:700;color:#111827;text-align:right;max-width:58%;}
+
+/* Detail aspek */
+.detail-title{font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin:14px 0 8px;}
+.det-row{display:grid;grid-template-columns:20px 1fr 30px 44px;gap:4px;align-items:center;padding:7px 6px;border-radius:7px;margin-bottom:2px;font-size:11px;}
+.det-row:nth-child(even){background:#fafafa;}
+.d-no{color:#d1d5db;text-align:center;font-size:10px;}
+.d-name{color:#374151;line-height:1.3;}
+.d-v{font-weight:800;text-align:center;border-radius:6px;padding:3px 0;font-size:12px;}
+.d-tv{font-weight:700;color:#1F3864;text-align:right;font-size:11px;}
+.det-total{background:linear-gradient(135deg,#EEF2FF,#E0E7FF);border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;margin-top:4px;font-size:12px;font-weight:800;color:#1F3864;}
+
+/* Catatan */
+.cat-box{background:#f9fafb;border-radius:10px;padding:11px 13px;margin-top:8px;font-size:12px;color:#374151;line-height:1.6;border-left:3px solid #c7d2fe;}
+.cat-title{font-weight:700;color:#1F3864;margin-bottom:4px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;}
+
+/* Save status */
+.saving-wrap{margin-top:14px;}
+.save-status{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:600;}
+.save-idle{background:#f3f4f6;color:#6b7280;}
+.save-loading{background:#eff6ff;color:#1d4ed8;}
+.save-ok{background:#f0fdf4;color:#16a34a;}
+.save-err{background:#fef2f2;color:#dc2626;}
+.save-spin{width:14px;height:14px;border:2px solid #93c5fd;border-top-color:#1d4ed8;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Buttons */
+.btn-ulang{width:100%;padding:15px;background:linear-gradient(135deg,#1F3864,#2E5FA3);color:#fff;font-size:15px;font-weight:800;border:none;border-radius:12px;cursor:pointer;font-family:inherit;margin-top:14px;letter-spacing:.1px;}
+.btn-ulang:active{transform:scale(.98);}
+.btn-share{width:100%;padding:13px;background:#f3f4f6;color:#374151;font-size:13px;font-weight:700;border:none;border-radius:10px;cursor:pointer;font-family:inherit;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.btn-share:active{background:#e5e7eb;}
+
+@media(min-width:480px){
+  .card,.setup-card{margin-left:auto;margin-right:auto;max-width:480px;}
+  .hdr{padding:28px 20px 22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-logo">
+    <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+  </div>
+  <h1>Form Penilaian Tes Drive</h1>
+  <p>PT. Kawan Lama Sejahtera</p>
+  <div class="hdr-badge">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+    Nilai 1–5 per aspek · Bobot berbeda
+  </div>
+</div>
+
+<!-- SETUP GOOGLE SHEETS -->
+<div class="setup-card">
+  <div class="setup-toggle" onclick="toggleSetup()">
+    <div class="setup-toggle-left">
+      <div class="setup-icon">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      </div>
+      <div>
+        <div class="setup-toggle-label">⚙️ Konfigurasi Google Sheets</div>
+        <div class="setup-toggle-sub" id="setup-sub">Klik untuk mengatur integrasi laporan</div>
+      </div>
+    </div>
+    <svg class="chevron" id="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="setup-body" id="setup-body">
+    <div class="url-field">
+      <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;">URL Apps Script <span class="req">*</span></label>
+      <input type="url" id="webappUrl" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveUrl()" />
+    </div>
+    <div class="url-hint">
+      1. Buka <a href="https://script.google.com" target="_blank">script.google.com</a> → Project baru<br>
+      2. Paste kode di bawah → <strong>Deploy → New Deployment → Web App</strong><br>
+      3. Akses: <strong>Anyone</strong> → Salin URL → paste di atas
+    </div>
+    <div class="code-toggle" onclick="toggleCode()">📋 Lihat / sembunyikan kode Apps Script</div>
+    <pre class="script-code" id="appscript-code" style="display:none">function doPost(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Data Tes Drive") || ss.insertSheet("Data Tes Drive");
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(["Timestamp","Nama Driver","Jenis SIM","Nama Penguji",
+      "NIK Penguji","Tanggal Tes","Aspek 1 - Pedal&Transmisi",
+      "Aspek 2 - Kemudi&Kontrol","Aspek 3 - Pengetahuan&Safety",
+      "Aspek 4 - Persiapan","Aspek 5 - Konsentrasi",
+      "Aspek 6 - Spion&Sein","Aspek 7 - Mendahului&Manuver",
+      "Aspek 8 - Parkir","Aspek 9 - Rambu&Aturan",
+      "Aspek 10 - Sikap&Etika","Total Nilai","Nilai Akhir",
+      "Keterangan","Kategori","Kelebihan","Area Perbaikan"]);
+  }
+  var d = JSON.parse(e.postData.contents);
+  sheet.appendRow([
+    new Date().toLocaleString("id-ID"),
+    d.namaDriver, d.jenisSIM, d.namaPenguji, d.nikPenguji, d.tanggal,
+    d.n1, d.n2, d.n3, d.n4, d.n5,
+    d.n6, d.n7, d.n8, d.n9, d.n10,
+    d.totalNilai, d.nilaiAkhir, d.keterangan, d.kategori,
+    d.kelebihan, d.perbaikan
+  ]);
+  return ContentService
+    .createTextOutput(JSON.stringify({status:"ok"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+  </div>
+</div>
+
+<!-- DATA PESERTA -->
+<div class="card">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    Data Peserta & Penguji
+  </div>
+  <div class="field"><label>Nama Calon Driver <span class="req">*</span></label><input type="text" id="namaDriver" placeholder="Nama lengkap..." autocomplete="name"></div>
+  <div class="row2">
+    <div class="field"><label>Jenis SIM <span class="req">*</span></label>
+      <input type="text" id="jenisSIM" placeholder="Contoh: SIM A, SIM B1...">
+    </div>
+    <div class="field"><label>Tanggal Tes <span class="req">*</span></label><input type="date" id="tanggal"></div>
+  </div>
+  <div class="field"><label>Nama Penguji <span class="req">*</span></label><input type="text" id="namaPenguji" placeholder="Nama penguji..."></div>
+  <div class="field"><label>NIK Penguji <span class="req">*</span></label><input type="text" id="nikPenguji" placeholder="16 digit NIK..." inputmode="numeric" maxlength="16"></div>
+</div>
+
+<!-- PENILAIAN -->
+<div class="card">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+    Penilaian Penguasaan Kendaraan
+  </div>
+
+  <div class="legend">
+    <div class="leg-item l1"><span class="lg-n">1</span>Sangat Kurang</div>
+    <div class="leg-item l2"><span class="lg-n">2</span>Kurang</div>
+    <div class="leg-item l3"><span class="lg-n">3</span>Cukup</div>
+    <div class="leg-item l4"><span class="lg-n">4</span>Baik</div>
+    <div class="leg-item l5"><span class="lg-n">5</span>Sangat Baik</div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-top"><span>Progress penilaian</span><span id="prog-text">0 / 10</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="aspek-hdr">
+    <span>No</span><span>Aspek Penilaian</span><span>Bobot</span><span>Nilai (1-5)</span>
+  </div>
+  <div class="aspek-wrap" id="aspek-list"></div>
+
+  <div class="skor-panel">
+    <div class="skor-left">
+      <div class="sl-label">Total Nilai Sementara</div>
+      <div class="sl-sub">Maks: 5.00</div>
+    </div>
+    <div>
+      <span class="skor-val" id="live-skor">0.00</span>
+      <span class="skor-max"> / 5.0</span>
+    </div>
+  </div>
+
+  <div class="err" id="err-msg"></div>
+  <button class="btn-submit" onclick="submitForm()">✓ Submit Penilaian</button>
+</div>
+
+<!-- CATATAN -->
+<div class="card">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+    Catatan Penguji
+  </div>
+  <div class="field"><label>Kelebihan Peserta</label><textarea id="kelebihan" placeholder="Tuliskan kelebihan peserta..."></textarea></div>
+  <div class="field"><label>Area Perbaikan</label><textarea id="perbaikan" placeholder="Tuliskan area yang perlu diperbaiki..."></textarea></div>
+</div>
+
+<!-- OVERLAY HASIL -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <div id="m-hdr"></div>
+    <div class="mbody">
+      <div class="na-box" id="m-nabox"></div>
+      <div class="info-section" id="m-info"></div>
+      <div class="detail-title">Detail Penilaian Per Aspek</div>
+      <div id="m-detail"></div>
+      <div id="m-catatan"></div>
+      <div class="saving-wrap" id="saving-wrap"></div>
+      <button class="btn-ulang" onclick="ulang()">+ Penilaian Baru</button>
+      <button class="btn-share" onclick="shareResult()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Bagikan Hasil
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──
+var WEBAPP_URL = localStorage.getItem('webapp_url') || '';
+
+var aspeks = [
+  {nama:'Pengoperasian Pedal & Transmisi',        bobot:0.15},
+  {nama:'Penguasaan Kemudi & Kontrol Kendaraan',  bobot:0.15},
+  {nama:'Pengetahuan Kendaraan & Safety',         bobot:0.10},
+  {nama:'Persiapan Mengemudi',                    bobot:0.10},
+  {nama:'Konsentrasi & Antisipasi Berkendara',    bobot:0.10},
+  {nama:'Penggunaan Spion & Lampu Sein',          bobot:0.10},
+  {nama:'Teknik Mendahului & Manuver',            bobot:0.10},
+  {nama:'Teknik Parkir',                          bobot:0.10},
+  {nama:'Pengetahuan Rambu & Aturan Lalu Lintas', bobot:0.05},
+  {nama:'Sikap & Etika Berkendara',               bobot:0.05}
+];
+
+var pilihan = new Array(10).fill(null);
+var lastResult = null;
+
+// ── SETUP PANEL ──
+function toggleSetup() {
+  var body = document.getElementById('setup-body');
+  var icon = document.getElementById('chevron-icon');
+  var isOpen = body.classList.contains('open');
+  body.classList.toggle('open');
+  icon.classList.toggle('open');
+}
+
+function toggleCode() {
+  var el = document.getElementById('appscript-code');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveUrl() {
+  var val = document.getElementById('webappUrl').value.trim();
+  WEBAPP_URL = val;
+  localStorage.setItem('webapp_url', val);
+  document.getElementById('setup-sub').textContent = val ? '✅ URL tersimpan' : 'Klik untuk mengatur integrasi laporan';
+}
+
+// Load saved URL on init
+window.addEventListener('DOMContentLoaded', function() {
+  var saved = localStorage.getItem('webapp_url');
+  if (saved) {
+    document.getElementById('webappUrl').value = saved;
+    document.getElementById('setup-sub').textContent = '✅ URL tersimpan';
+    WEBAPP_URL = saved;
+  }
+  buildAspeks();
+  document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+});
+
+// ── BUILD ASPEK LIST ──
+function buildAspeks() {
+  var c = document.getElementById('aspek-list');
+  aspeks.forEach(function(asp, i) {
+    var d = document.createElement('div');
+    d.className = 'aspek-row';
+    d.id = 'ar-' + i;
+    var opts = '';
+    [1,2,3,4,5].forEach(function(v) {
+      opts += '<input type="radio" class="nv-in v'+v+'" name="a'+i+'" id="a'+i+'v'+v+'" onchange="pilih('+i+','+v+')">' +
+              '<label class="nv-lb" for="a'+i+'v'+v+'">'+v+'</label>';
+    });
+    d.innerHTML =
+      '<span class="ar-no">'+(i+1)+'</span>' +
+      '<span class="ar-name">'+asp.nama+'</span>' +
+      '<span class="ar-bobot">'+(asp.bobot*100).toFixed(0)+'%</span>' +
+      '<div class="nilai-sel">'+opts+'</div>';
+    c.appendChild(d);
+  });
+}
+
+function pilih(i, v) {
+  pilihan[i] = v;
+  document.getElementById('ar-'+i).classList.add('done');
+  updateSkor();
+}
+
+function updateSkor() {
+  var filled = pilihan.filter(function(x){return x!==null;}).length;
+  var total  = aspeks.reduce(function(s,asp,i){return s+(pilihan[i]?pilihan[i]*asp.bobot:0);},0);
+  document.getElementById('live-skor').textContent = total.toFixed(2);
+  document.getElementById('prog-text').textContent = filled+' / 10';
+  document.getElementById('prog-fill').style.width = (filled/10*100)+'%';
+}
+
+// ── HELPERS ──
+function getInfo(na) {
+  if (na>=5) return {ket:'Sangat Baik',  kat:'Lulus',           cls:'mhdr-lulus', emoji:'🌟'};
+  if (na>=4) return {ket:'Baik',         kat:'Lulus',           cls:'mhdr-lulus', emoji:'✅'};
+  if (na>=3) return {ket:'Cukup',        kat:'Dipertimbangkan', cls:'mhdr-dipert',emoji:'⚖️'};
+  if (na>=2) return {ket:'Kurang',       kat:'Tidak Lulus',     cls:'mhdr-tidak', emoji:'❌'};
+  return          {ket:'Sangat Kurang',kat:'Tidak Lulus',     cls:'mhdr-tidak', emoji:'❌'};
+}
+
+function getColor(n) {
+  if (n==1) return {bg:'#fef2f2',fg:'#b91c1c'};
+  if (n==2) return {bg:'#fff7ed',fg:'#c2410c'};
+  if (n==3) return {bg:'#eff6ff',fg:'#1d4ed8'};
+  if (n==4) return {bg:'#f0fdf4',fg:'#15803d'};
+  return          {bg:'#dcfce7',fg:'#166534'};
+}
+
+// ── SUBMIT ──
+function submitForm() {
+  var nd = document.getElementById('namaDriver').value.trim();
+  var js = document.getElementById('jenisSIM').value.trim();
+  var np = document.getElementById('namaPenguji').value.trim();
+  var nk = document.getElementById('nikPenguji').value.trim();
+  var tg = document.getElementById('tanggal').value;
+  var kb = document.getElementById('kelebihan').value.trim();
+  var pb = document.getElementById('perbaikan').value.trim();
+  var er = document.getElementById('err-msg');
+
+  if (!nd||!js||!np||!nk||!tg) {
+    er.style.display='block';
+    er.innerHTML='⚠️ Harap isi semua data peserta yang bertanda <span style="color:#ef4444">*</span>';
+    er.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  if (pilihan.some(function(v){return v===null;})) {
+    var missing = pilihan.map(function(v,i){return v===null?i+1:null;}).filter(Boolean);
+    er.style.display='block';
+    er.textContent='⚠️ Belum ada nilai untuk aspek: '+missing.join(', ')+'. Mohon lengkapi semua aspek.';
+    er.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  er.style.display='none';
+
+  var totalNilai = aspeks.reduce(function(s,asp,i){return s+pilihan[i]*asp.bobot;},0);
+  var nilaiAkhir = Math.min(5, Math.max(1, Math.round(totalNilai+0.0001)));
+  var info = getInfo(nilaiAkhir);
+
+  // Build modal header
+  document.getElementById('m-hdr').innerHTML =
+    '<div class="mhdr '+info.cls+'">' +
+    '<button class="mhdr-close" onclick="document.getElementById(\'overlay\').classList.remove(\'show\')">✕</button>' +
+    '<div class="m-emoji">'+info.emoji+'</div>' +
+    '<div class="m-status">'+info.kat+'</div>' +
+    '<div class="m-ket-text">'+info.ket+'</div>' +
+    '<div class="m-skor-text">Skor: '+totalNilai.toFixed(2)+' / 5.00 · Nilai Akhir: '+nilaiAkhir+'</div>' +
+    '</div>';
+
+  // NA Box
+  var c = getColor(nilaiAkhir);
+  document.getElementById('m-nabox').innerHTML =
+    '<div class="na-item" style="background:'+c.bg+'"><div class="na-num" style="color:'+c.fg+'">'+nilaiAkhir+'</div><div class="na-lbl">Nilai Akhir</div></div>' +
+    '<div class="na-item" style="background:#f9fafb"><div class="na-ket-text" style="color:#374151;font-size:16px;margin-top:6px;">'+info.ket+'</div><div class="na-lbl" style="margin-top:6px">Keterangan</div></div>' +
+    '<div class="na-item" style="background:'+c.bg+'"><div class="na-ket-text" style="color:'+c.fg+';font-size:15px;margin-top:6px;">'+info.kat+'</div><div class="na-lbl" style="margin-top:6px">Kategori</div></div>';
+
+  // Info rows
+  document.getElementById('m-info').innerHTML =
+    '<div class="m-row"><span class="m-lbl">Nama Driver</span><span class="m-val">'+nd+'</span></div>' +
+    '<div class="m-row"><span class="m-lbl">Jenis SIM</span><span class="m-val">'+js+'</span></div>' +
+    '<div class="m-row"><span class="m-lbl">Penguji</span><span class="m-val">'+np+'</span></div>' +
+    '<div class="m-row"><span class="m-lbl">NIK Penguji</span><span class="m-val">'+nk+'</span></div>' +
+    '<div class="m-row"><span class="m-lbl">Tanggal</span><span class="m-val">'+formatDate(tg)+'</span></div>';
+
+  // Detail aspek
+  var det = '';
+  aspeks.forEach(function(asp,i){
+    var n = pilihan[i];
+    var tv = (n*asp.bobot).toFixed(2);
+    var cv = getColor(n);
+    det += '<div class="det-row">' +
+      '<span class="d-no">'+(i+1)+'</span>' +
+      '<span class="d-name">'+asp.nama+'</span>' +
+      '<span class="d-v" style="background:'+cv.bg+';color:'+cv.fg+'">'+n+'</span>' +
+      '<span class="d-tv">'+tv+'</span>' +
+      '</div>';
+  });
+  document.getElementById('m-detail').innerHTML = det;
+  document.getElementById('m-detail').innerHTML +=
+    '<div class="det-total"><span>TOTAL NILAI</span><span>'+totalNilai.toFixed(2)+' / 5.00</span></div>';
+
+  // Catatan
+  var cat = '';
+  if (kb) cat += '<div class="cat-box"><div class="cat-title">Kelebihan Peserta</div>'+escHtml(kb)+'</div>';
+  if (pb) cat += '<div class="cat-box" style="margin-top:8px;border-left-color:#fca5a5"><div class="cat-title" style="color:#b91c1c">Area Perbaikan</div>'+escHtml(pb)+'</div>';
+  document.getElementById('m-catatan').innerHTML = cat;
+
+  // Show overlay
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('modal').scrollTop = 0;
+
+  // Save to sheet
+  lastResult = {
+    namaDriver:nd, jenisSIM:js, namaPenguji:np, nikPenguji:nk, tanggal:tg,
+    n1:pilihan[0],n2:pilihan[1],n3:pilihan[2],n4:pilihan[3],n5:pilihan[4],
+    n6:pilihan[5],n7:pilihan[6],n8:pilihan[7],n9:pilihan[8],n10:pilihan[9],
+    totalNilai:totalNilai.toFixed(2), nilaiAkhir:nilaiAkhir,
+    keterangan:info.ket, kategori:info.kat,
+    kelebihan:kb, perbaikan:pb
+  };
+
+  kirimKeSheet(lastResult);
+}
+
+// ── KIRIM KE SHEET ──
+function kirimKeSheet(data) {
+  var wrap = document.getElementById('saving-wrap');
+  if (!WEBAPP_URL) {
+    wrap.innerHTML = '<div class="save-status save-idle">💡 URL Apps Script belum diisi. Buka panel ⚙️ di atas untuk mengatur.</div>';
+    return;
+  }
+
+  wrap.innerHTML = '<div class="save-status save-loading"><div class="save-spin"></div>Menyimpan ke Google Sheets...</div>';
+
+  fetch(WEBAPP_URL, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify(data)
+  }).then(function(){
+    wrap.innerHTML = '<div class="save-status save-ok">✅ Data berhasil tersimpan di Google Sheets!</div>';
+  }).catch(function(e){
+    wrap.innerHTML = '<div class="save-status save-err">⚠️ Gagal menyimpan. Coba lagi atau periksa URL Apps Script.<br><small>'+e.message+'</small></div>';
+  });
+}
+
+// ── SHARE RESULT ──
+function shareResult() {
+  if (!lastResult) return;
+  var text = '📋 *Hasil Tes Drive*\n' +
+    '👤 ' + lastResult.namaDriver + '\n' +
+    '📅 ' + formatDate(lastResult.tanggal) + '\n' +
+    '🎯 Nilai: ' + lastResult.nilaiAkhir + ' (' + lastResult.keterangan + ')\n' +
+    '📊 Kategori: *' + lastResult.kategori + '*\n' +
+    '🔢 Total skor: ' + lastResult.totalNilai + '/5.00\n' +
+    '——————————————\n' +
+    'PT. Kawan Lama Sejahtera';
+
+  if (navigator.share) {
+    navigator.share({title:'Hasil Tes Drive', text:text}).catch(function(){});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function(){
+      alert('Teks hasil disalin ke clipboard!');
+    });
+  }
+}
+
+// ── RESET ──
+function ulang() {
+  document.getElementById('overlay').classList.remove('show');
+  ['namaDriver','namaPenguji','nikPenguji','kelebihan','perbaikan'].forEach(function(id){
+    document.getElementById(id).value='';
+  });
+  document.getElementById('jenisSIM').value = '';
+  document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+  pilihan = new Array(10).fill(null);
+  document.querySelectorAll('.nv-in').forEach(function(r){r.checked=false;});
+  document.querySelectorAll('.aspek-row').forEach(function(r){r.classList.remove('done');});
+  document.getElementById('live-skor').textContent='0.00';
+  document.getElementById('prog-text').textContent='0 / 10';
+  document.getElementById('prog-fill').style.width='0%';
+  document.getElementById('err-msg').style.display='none';
+  lastResult = null;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── UTILS ──
+function formatDate(d) {
+  if (!d) return '';
+  var p = d.split('-');
+  var bn = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  return p[2]+' '+bn[parseInt(p[1])-1]+' '+p[0];
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
