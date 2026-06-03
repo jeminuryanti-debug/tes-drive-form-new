@@ -333,7 +333,7 @@ body{padding-bottom:40px;}
 
 <script>
 // ── CONFIG ──
-var WEBAPP_URL = localStorage.getItem('webapp_url') || '';
+var WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyLE1Q1iRO0-_lEWov1rnqNF3GM7cqWNs83uaf7L7SQ7Y_G2bAjsFwUqe-Z64oFsOhj/exec';
 
 var aspeks = [
   {nama:'Pengoperasian Pedal & Transmisi',        bobot:0.15},
@@ -372,14 +372,10 @@ function saveUrl() {
   document.getElementById('setup-sub').textContent = val ? '✅ URL tersimpan' : 'Klik untuk mengatur integrasi laporan';
 }
 
-// Load saved URL on init
+// Init
 window.addEventListener('DOMContentLoaded', function() {
-  var saved = localStorage.getItem('webapp_url');
-  if (saved) {
-    document.getElementById('webappUrl').value = saved;
-    document.getElementById('setup-sub').textContent = '✅ URL tersimpan';
-    WEBAPP_URL = saved;
-  }
+  document.getElementById('webappUrl').value = WEBAPP_URL;
+  document.getElementById('setup-sub').textContent = '✅ URL sudah terpasang';
   buildAspeks();
   document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
 });
