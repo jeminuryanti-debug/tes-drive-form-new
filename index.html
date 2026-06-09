@@ -73,13 +73,13 @@ body{padding-bottom:40px;}
 .aspek-hdr{display:grid;grid-template-columns:24px 1fr 44px 100px;gap:4px;padding:9px 10px;background:#1F3864;border-radius:10px 10px 0 0;font-size:10px;font-weight:700;color:#fff;text-align:center;}
 .aspek-hdr span:nth-child(2){text-align:left;}
 .aspek-wrap{border:1.5px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;overflow:hidden;}
-.aspek-row{display:grid;grid-template-columns:24px 1fr 44px 100px;gap:4px;align-items:center;padding:10px 10px;border-bottom:1px solid #f3f4f6;transition:background .1s;}
+.aspek-row{display:grid;grid-template-columns:24px 1fr 44px 100px;gap:4px;align-items:start;padding:10px 10px;border-bottom:1px solid #f3f4f6;transition:background .1s;}
 .aspek-row:last-child{border-bottom:none;}
 .aspek-row:nth-child(even){background:#fafbff;}
 .aspek-row.done{background:#f0fff4 !important;}
-.ar-no{font-size:10px;color:#9ca3af;text-align:center;}
-.ar-name{font-size:12px;color:#374151;line-height:1.4;}
-.ar-bobot{font-size:11px;color:#6b7280;text-align:center;font-weight:700;}
+.ar-no{font-size:10px;color:#9ca3af;text-align:center;padding-top:3px;}
+.ar-name{font-size:12px;color:#374151;line-height:1.4;padding-top:2px;}
+.ar-bobot{font-size:11px;color:#6b7280;text-align:center;font-weight:700;padding-top:3px;}
 .nilai-sel{display:flex;gap:3px;justify-content:center;}
 .nv-in{display:none;}
 .nv-lb{display:flex;align-items:center;justify-content:center;width:27px;height:27px;border-radius:7px;border:1.5px solid #d1d5db;font-size:12px;font-weight:700;cursor:pointer;color:#9ca3af;background:#fff;transition:all .12s;touch-action:manipulation;}
@@ -90,6 +90,14 @@ body{padding-bottom:40px;}
 .nv-in.v3:checked+.nv-lb{background:#1d4ed8;}
 .nv-in.v4:checked+.nv-lb{background:#15803d;}
 .nv-in.v5:checked+.nv-lb{background:#166534;}
+.nilai-desc{display:none;grid-column:1/-1;margin-top:6px;padding:8px 10px;border-radius:8px;font-size:11px;line-height:1.5;font-weight:500;border-left:3px solid transparent;animation:fadeIn .2s ease;}
+.nilai-desc.show{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.nd-v1{background:#fef2f2;color:#991b1b;border-left-color:#fca5a5;}
+.nd-v2{background:#fff7ed;color:#9a3412;border-left-color:#fdba74;}
+.nd-v3{background:#eff6ff;color:#1e40af;border-left-color:#93c5fd;}
+.nd-v4{background:#f0fdf4;color:#166534;border-left-color:#86efac;}
+.nd-v5{background:#dcfce7;color:#14532d;border-left-color:#4ade80;}
 
 /* ── LIVE SCORE ── */
 .skor-panel{margin-top:12px;background:linear-gradient(135deg,#EEF2FF,#E0E7FF);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border:1px solid #c7d2fe;}
@@ -297,6 +305,60 @@ var aspeks = [
 var pilihan = new Array(10).fill(null);
 var lastResult = null;
 
+// Deskripsi detail per nilai (1-5) untuk setiap aspek
+var aspekDesc = [
+  ['Tidak dapat mengoperasikan pedal dan transmisi, kendaraan sering mati/tersendat parah.',
+   'Penggunaan kopling/gas tidak tepat, sering selip atau hentakan berlebihan.',
+   'Bisa mengoperasikan pedal dan transmisi namun perpindahan gigi masih kasar.',
+   'Mengoperasikan pedal dan transmisi dengan baik, perpindahan gigi cukup halus.',
+   'Mengoperasikan semua pedal dan transmisi secara halus, presisi, dan efisien di semua kondisi.'],
+  ['Tidak dapat mengendalikan kemudi, kendaraan keluar jalur atau berbahaya.',
+   'Pengendalian kemudi tidak stabil, sering koreksi berlebihan dan posisi jalur tidak terjaga.',
+   'Dapat mengendalikan kemudi namun gerakan tidak perlu atau posisi jalur kurang konsisten.',
+   'Mengendalikan kemudi dengan baik, posisi jalur terjaga dan manuver dilakukan percaya diri.',
+   'Pengendalian kemudi sangat halus dan presisi, posisi jalur sempurna di semua situasi.'],
+  ['Tidak mengetahui komponen kendaraan dan prosedur keselamatan sama sekali.',
+   'Pengetahuan kendaraan sangat terbatas, tidak dapat menjelaskan fungsi komponen utama.',
+   'Mengetahui komponen dasar namun penjelasan prosedur safety kurang lengkap.',
+   'Memahami komponen kendaraan dan prosedur safety dengan baik dan dapat menjelaskannya.',
+   'Pengetahuan kendaraan dan safety sangat mendalam, mampu mendeteksi potensi masalah teknis.'],
+  ['Tidak melakukan persiapan apapun sebelum mengemudi (cermin, sabuk, posisi duduk).',
+   'Hanya melakukan 1-2 langkah persiapan, banyak yang terlewat.',
+   'Melakukan sebagian besar persiapan namun ada beberapa langkah yang masih terlewat.',
+   'Melakukan persiapan mengemudi dengan lengkap dan sistematis.',
+   'Persiapan mengemudi sangat lengkap, sistematis, dan dilakukan secara cepat dan terbiasa.'],
+  ['Tidak fokus, sering terkejut dengan kondisi jalan, tidak mampu mengantisipasi bahaya.',
+   'Konsentrasi mudah terpecah, lambat merespons situasi di sekitar kendaraan.',
+   'Cukup konsentrasi namun antisipasi terhadap potensi bahaya masih terlambat.',
+   'Konsentrasi baik, mampu mengantisipasi situasi dengan cepat dan responsif.',
+   'Konsentrasi penuh dan antisipasi sangat tajam, selalu selangkah lebih maju membaca situasi.'],
+  ['Tidak menggunakan spion dan lampu sein sama sekali.',
+   'Jarang menggunakan spion/sein, sering berpindah lajur atau berbelok tanpa memberi tanda.',
+   'Menggunakan spion dan sein namun tidak konsisten atau timing-nya kurang tepat.',
+   'Menggunakan spion dan sein dengan benar dan konsisten pada situasi yang tepat.',
+   'Penggunaan spion dan sein sangat disiplin, tepat waktu, dan menjadi kebiasaan alami.'],
+  ['Tidak dapat melakukan manuver atau mendahului dengan aman, membahayakan.',
+   'Manuver dilakukan dengan ragu-ragu dan tidak memperhatikan keselamatan sekitar.',
+   'Dapat melakukan manuver namun kurang mulus, perlu ruang lebih dari yang dibutuhkan.',
+   'Melakukan manuver dan mendahului dengan baik, aman, dan efisien.',
+   'Manuver dan mendahului dilakukan secara halus, efisien, dan penuh perhitungan keselamatan.'],
+  ['Tidak dapat parkir, membutuhkan bantuan atau tidak dapat menempatkan kendaraan.',
+   'Parkir tapi sering tidak presisi, butuh banyak koreksi dan posisi akhir kurang tepat.',
+   'Bisa parkir tapi perlu beberapa kali manuver dan posisi akhir kurang sempurna.',
+   'Parkir dengan baik dan presisi dalam 1-2 gerakan, posisi akhir tepat.',
+   'Parkir sempurna, efisien, dan aman dalam satu gerakan mulus di berbagai kondisi.'],
+  ['Tidak mengetahui rambu dan aturan lalu lintas, melanggar banyak aturan.',
+   'Pengetahuan rambu sangat minim, sering melanggar aturan dasar lalu lintas.',
+   'Mengetahui rambu umum namun ada beberapa aturan yang masih dilanggar.',
+   'Memahami dan mematuhi rambu serta aturan lalu lintas dengan baik.',
+   'Pengetahuan rambu dan aturan sangat lengkap, selalu patuh dan dapat menjelaskan alasannya.'],
+  ['Sikap berkendara sangat buruk, tidak sopan kepada pengguna jalan lain, berbahaya.',
+   'Sering terburu-buru, kurang sabar, dan tidak mempertimbangkan pengguna jalan lain.',
+   'Sikap cukup baik namun kadang kurang sabar atau kurang menghormati pengguna jalan lain.',
+   'Sikap berkendara baik, sabar, dan menghormati pengguna jalan lain.',
+   'Sikap dan etika berkendara sangat baik, menjadi contoh pengemudi profesional.']
+];
+
 // ── SETUP PANEL ──
 function toggleSetup() {
   var body = document.getElementById('setup-body');
@@ -340,7 +402,8 @@ function buildAspeks() {
       '<span class="ar-no">'+(i+1)+'</span>' +
       '<span class="ar-name">'+asp.nama+'</span>' +
       '<span class="ar-bobot">'+(asp.bobot*100).toFixed(0)+'%</span>' +
-      '<div class="nilai-sel">'+opts+'</div>';
+      '<div class="nilai-sel">'+opts+'</div>' +
+      '<div class="nilai-desc" id="nd-'+i+'"></div>';
     c.appendChild(d);
   });
 }
@@ -348,6 +411,11 @@ function buildAspeks() {
 function pilih(i, v) {
   pilihan[i] = v;
   document.getElementById('ar-'+i).classList.add('done');
+  // Show description
+  var nd = document.getElementById('nd-'+i);
+  var labels = ['','Sangat Kurang','Kurang','Cukup','Baik','Sangat Baik'];
+  nd.className = 'nilai-desc nd-v'+v+' show';
+  nd.innerHTML = '<strong>'+v+' – '+labels[v]+':</strong> '+aspekDesc[i][v-1];
   updateSkor();
 }
 
@@ -525,6 +593,7 @@ function ulang() {
   pilihan = new Array(10).fill(null);
   document.querySelectorAll('.nv-in').forEach(function(r){r.checked=false;});
   document.querySelectorAll('.aspek-row').forEach(function(r){r.classList.remove('done');});
+  document.querySelectorAll('.nilai-desc').forEach(function(d){d.className='nilai-desc';d.innerHTML='';});
   document.getElementById('live-skor').textContent='0.00';
   document.getElementById('prog-text').textContent='0 / 10';
   document.getElementById('prog-fill').style.width='0%';
