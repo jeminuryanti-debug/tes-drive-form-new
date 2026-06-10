@@ -99,7 +99,14 @@ body{padding-bottom:40px;}
 .nd-v4{background:#f0fdf4;color:#166534;border-left-color:#86efac;}
 .nd-v5{background:#dcfce7;color:#14532d;border-left-color:#4ade80;}
 
-/* ── LIVE SCORE ── */
+/* ── ASPEK INFO PANEL ── */
+.ar-name-wrap{display:flex;align-items:flex-start;gap:5px;padding-top:2px;}
+.ar-info-btn{flex-shrink:0;width:20px;height:20px;border-radius:5px;background:#29ABE2;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:0px;transition:background .15s;touch-action:manipulation;padding:0;}
+.ar-info-btn:active,.ar-info-btn.active{background:#1a8fbd;}
+.ar-info-btn svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.aspek-info{display:none;grid-column:1/-1;margin-top:5px;padding:9px 11px;background:#f0f4ff;border-radius:8px;font-size:11px;color:#1e3a8a;line-height:1.6;border-left:3px solid #2E5FA3;animation:fadeIn .2s ease;}
+.aspek-info.show{display:block;}
+.aspek-info strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#2E5FA3;margin-bottom:3px;}
 .skor-panel{margin-top:12px;background:linear-gradient(135deg,#EEF2FF,#E0E7FF);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border:1px solid #c7d2fe;}
 .skor-left .sl-label{font-size:12px;font-weight:700;color:#1F3864;}
 .skor-left .sl-sub{font-size:10px;color:#6b7280;margin-top:2px;}
@@ -191,7 +198,7 @@ body{padding-bottom:40px;}
     <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
   </div>
   <h1>Form Penilaian Tes Drive</h1>
-  <p>PT. Kawan Lama Sejahtera</p>
+  <p>Kawan Lama Group</p>
   <div class="hdr-badge">
     <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
     Nilai 1–5 per aspek · Bobot berbeda
@@ -307,59 +314,93 @@ var lastResult = null;
 
 // Deskripsi detail per nilai (1-5) untuk setiap aspek
 var aspekDesc = [
-  ['Tidak dapat mengoperasikan pedal dan transmisi, kendaraan sering mati/tersendat parah.',
-   'Penggunaan kopling/gas tidak tepat, sering selip atau hentakan berlebihan.',
-   'Bisa mengoperasikan pedal dan transmisi namun perpindahan gigi masih kasar.',
-   'Mengoperasikan pedal dan transmisi dengan baik, perpindahan gigi cukup halus.',
-   'Mengoperasikan semua pedal dan transmisi secara halus, presisi, dan efisien di semua kondisi.'],
-  ['Tidak dapat mengendalikan kemudi, kendaraan keluar jalur atau berbahaya.',
-   'Pengendalian kemudi tidak stabil, sering koreksi berlebihan dan posisi jalur tidak terjaga.',
-   'Dapat mengendalikan kemudi namun gerakan tidak perlu atau posisi jalur kurang konsisten.',
-   'Mengendalikan kemudi dengan baik, posisi jalur terjaga dan manuver dilakukan percaya diri.',
-   'Pengendalian kemudi sangat halus dan presisi, posisi jalur sempurna di semua situasi.'],
-  ['Tidak mengetahui komponen kendaraan dan prosedur keselamatan sama sekali.',
-   'Pengetahuan kendaraan sangat terbatas, tidak dapat menjelaskan fungsi komponen utama.',
-   'Mengetahui komponen dasar namun penjelasan prosedur safety kurang lengkap.',
-   'Memahami komponen kendaraan dan prosedur safety dengan baik dan dapat menjelaskannya.',
-   'Pengetahuan kendaraan dan safety sangat mendalam, mampu mendeteksi potensi masalah teknis.'],
-  ['Tidak melakukan persiapan apapun sebelum mengemudi (cermin, sabuk, posisi duduk).',
-   'Hanya melakukan 1-2 langkah persiapan, banyak yang terlewat.',
-   'Melakukan sebagian besar persiapan namun ada beberapa langkah yang masih terlewat.',
-   'Melakukan persiapan mengemudi dengan lengkap dan sistematis.',
-   'Persiapan mengemudi sangat lengkap, sistematis, dan dilakukan secara cepat dan terbiasa.'],
-  ['Tidak fokus, sering terkejut dengan kondisi jalan, tidak mampu mengantisipasi bahaya.',
-   'Konsentrasi mudah terpecah, lambat merespons situasi di sekitar kendaraan.',
-   'Cukup konsentrasi namun antisipasi terhadap potensi bahaya masih terlambat.',
-   'Konsentrasi baik, mampu mengantisipasi situasi dengan cepat dan responsif.',
-   'Konsentrasi penuh dan antisipasi sangat tajam, selalu selangkah lebih maju membaca situasi.'],
-  ['Tidak menggunakan spion dan lampu sein sama sekali.',
-   'Jarang menggunakan spion/sein, sering berpindah lajur atau berbelok tanpa memberi tanda.',
-   'Menggunakan spion dan sein namun tidak konsisten atau timing-nya kurang tepat.',
-   'Menggunakan spion dan sein dengan benar dan konsisten pada situasi yang tepat.',
-   'Penggunaan spion dan sein sangat disiplin, tepat waktu, dan menjadi kebiasaan alami.'],
-  ['Tidak dapat melakukan manuver atau mendahului dengan aman, membahayakan.',
-   'Manuver dilakukan dengan ragu-ragu dan tidak memperhatikan keselamatan sekitar.',
-   'Dapat melakukan manuver namun kurang mulus, perlu ruang lebih dari yang dibutuhkan.',
-   'Melakukan manuver dan mendahului dengan baik, aman, dan efisien.',
-   'Manuver dan mendahului dilakukan secara halus, efisien, dan penuh perhitungan keselamatan.'],
-  ['Tidak dapat parkir, membutuhkan bantuan atau tidak dapat menempatkan kendaraan.',
-   'Parkir tapi sering tidak presisi, butuh banyak koreksi dan posisi akhir kurang tepat.',
-   'Bisa parkir tapi perlu beberapa kali manuver dan posisi akhir kurang sempurna.',
-   'Parkir dengan baik dan presisi dalam 1-2 gerakan, posisi akhir tepat.',
-   'Parkir sempurna, efisien, dan aman dalam satu gerakan mulus di berbagai kondisi.'],
-  ['Tidak mengetahui rambu dan aturan lalu lintas, melanggar banyak aturan.',
-   'Pengetahuan rambu sangat minim, sering melanggar aturan dasar lalu lintas.',
-   'Mengetahui rambu umum namun ada beberapa aturan yang masih dilanggar.',
-   'Memahami dan mematuhi rambu serta aturan lalu lintas dengan baik.',
-   'Pengetahuan rambu dan aturan sangat lengkap, selalu patuh dan dapat menjelaskan alasannya.'],
-  ['Sikap berkendara sangat buruk, tidak sopan kepada pengguna jalan lain, berbahaya.',
-   'Sering terburu-buru, kurang sabar, dan tidak mempertimbangkan pengguna jalan lain.',
-   'Sikap cukup baik namun kadang kurang sabar atau kurang menghormati pengguna jalan lain.',
-   'Sikap berkendara baik, sabar, dan menghormati pengguna jalan lain.',
-   'Sikap dan etika berkendara sangat baik, menjadi contoh pengemudi profesional.']
+  // 1: Pengoperasian Pedal & Transmisi
+  ['Peserta tidak mampu mengoperasikan pedal/transmisi dengan aman; kendaraan sering mati, hentakan kasar, salah penggunaan pedal, atau berpotensi membahayakan.',
+   'Peserta memahami fungsi pedal/transmisi, tetapi masih sering kasar, terlambat, ragu, atau belum stabil dalam pengoperasian.',
+   'Peserta mampu mengoperasikan pedal dan transmisi secara cukup aman, namun masih perlu pembiasaan agar lebih halus dan konsisten.',
+   'Peserta mampu mengoperasikan pedal dan transmisi dengan baik, halus, tepat, dan sesuai kebutuhan manuver.',
+   'Peserta sangat menguasai pedal dan transmisi; perpindahan halus, stabil, efisien, serta mampu menyesuaikan dengan kondisi jalan/manuver tanpa membahayakan.'],
+  // 2: Penguasaan Kemudi & Kontrol Kendaraan
+  ['Peserta tidak mampu menjaga kendali kendaraan; arah kendaraan tidak stabil, sering terlalu melebar/terlalu dekat obstacle, atau berisiko menyenggol.',
+   'Peserta cukup memahami kemudi, tetapi kontrol kendaraan masih kaku, kurang presisi, dan sering membutuhkan koreksi besar.',
+   'Peserta mampu mengendalikan kendaraan secara dasar, arah relatif aman, namun masih perlu peningkatan presisi dan konsistensi.',
+   'Peserta mampu mengendalikan kendaraan dengan stabil, presisi, dan dapat melakukan koreksi arah dengan baik.',
+   'Peserta sangat menguasai kontrol kendaraan; arah stabil, koreksi halus, posisi kendaraan terjaga, dan mampu mengantisipasi ruang gerak kendaraan dengan sangat baik.'],
+  // 3: Pengetahuan Kendaraan & Safety
+  ['Peserta tidak memahami komponen dasar kendaraan dan mengabaikan aspek safety.',
+   'Peserta mengetahui sebagian fungsi kendaraan, tetapi belum memahami kaitannya dengan keselamatan berkendara.',
+   'Peserta memahami dasar kendaraan dan safety secara umum, namun penjelasan masih terbatas.',
+   'Peserta memahami fungsi kendaraan, risiko keselamatan, dan tindakan pencegahan dengan baik.',
+   'Peserta sangat memahami kendaraan dan safety; mampu menjelaskan risiko, pencegahan, dan tindakan aman secara detail serta aplikatif.'],
+  // 4: Persiapan Mengemudi
+  ['Peserta langsung menjalankan kendaraan tanpa melakukan pengecekan dasar atau persiapan keselamatan.',
+   'Peserta melakukan sebagian persiapan, tetapi tidak lengkap dan masih harus sering diingatkan.',
+   'Peserta melakukan persiapan dasar sebelum mengemudi, namun belum sepenuhnya konsisten.',
+   'Peserta melakukan persiapan mengemudi dengan baik dan cukup lengkap sebelum kendaraan dijalankan.',
+   'Peserta sangat konsisten melakukan persiapan mengemudi secara menyeluruh, aman, dan sistematis sebelum kendaraan bergerak.'],
+  // 5: Konsentrasi & Antisipasi Berkendara
+  ['Peserta kurang fokus, mudah terdistraksi, lambat merespons situasi, dan berpotensi membahayakan.',
+   'Peserta cukup fokus tetapi antisipasi masih lemah; sering terlambat membaca risiko.',
+   'Peserta memiliki konsentrasi cukup dan mampu merespons kondisi umum, namun masih perlu peningkatan awareness.',
+   'Peserta fokus, mampu membaca kondisi sekitar, dan cukup cepat mengantisipasi potensi risiko.',
+   'Peserta sangat fokus dan antisipatif; mampu membaca risiko lebih awal, menjaga jarak, dan mengambil keputusan aman secara konsisten.'],
+  // 6: Penggunaan Spion & Lampu Sein
+  ['Peserta jarang/tidak menggunakan spion dan lampu sein sehingga berisiko membahayakan kendaraan lain/orang sekitar.',
+   'Peserta menggunakan spion/lampu sein, tetapi tidak konsisten atau sering terlambat.',
+   'Peserta cukup menggunakan spion dan lampu sein pada kondisi umum, namun masih perlu pembiasaan agar lebih konsisten.',
+   'Peserta menggunakan spion dan lampu sein dengan baik sebelum mengambil keputusan manuver.',
+   'Peserta sangat konsisten menggunakan spion, lampu sein, dan kontrol visual sebelum setiap perubahan arah/manuver.'],
+  // 7: Teknik Mendahului & Manuver
+  ['Peserta mengambil keputusan mendahului/manuver secara berisiko, tidak memperhatikan jarak, blind spot, atau kendaraan sekitar.',
+   'Peserta memahami dasar manuver, tetapi masih ragu, kurang presisi, atau belum aman dalam membaca ruang.',
+   'Peserta cukup mampu melakukan manuver aman pada kondisi sederhana, namun masih perlu arahan pada kondisi kompleks.',
+   'Peserta mampu melakukan manuver dan keputusan mendahului dengan baik, memperhatikan jarak dan kondisi sekitar.',
+   'Peserta sangat matang dalam manuver; mampu membaca ruang, jarak, blind spot, dan risiko sebelum mengambil keputusan.'],
+  // 8: Teknik Parkir
+  ['Peserta tidak mampu melakukan parkir dengan aman; sering salah posisi, terlalu dekat obstacle, atau berpotensi menyenggol.',
+   'Peserta mampu parkir secara dasar, tetapi masih banyak koreksi, kurang presisi, dan belum konsisten menjaga jarak.',
+   'Peserta cukup mampu melakukan parkir aman dengan beberapa koreksi dan masih perlu pembiasaan.',
+   'Peserta mampu parkir dengan baik, cukup presisi, menjaga jarak aman, dan memperhatikan obstacle.',
+   'Peserta sangat menguasai teknik parkir; posisi presisi, kontrol jarak baik, tidak memaksakan manuver, dan mampu berhenti/reposisi saat kondisi tidak aman.'],
+  // 9: Pengetahuan Rambu & Aturan Lalu Lintas
+  ['Peserta tidak memahami rambu/aturan dasar lalu lintas dan sering melakukan pelanggaran.',
+   'Peserta memahami sebagian rambu/aturan, tetapi masih banyak keraguan atau kesalahan.',
+   'Peserta memahami aturan lalu lintas dasar dan dapat mengikuti ketentuan umum.',
+   'Peserta memahami rambu, marka, dan aturan lalu lintas dengan baik serta menerapkannya saat berkendara.',
+   'Peserta sangat memahami aturan lalu lintas dan konsisten menerapkan kepatuhan sebagai bagian dari safety behavior.'],
+  // 10: Sikap & Etika Berkendara
+  ['Peserta menunjukkan sikap agresif, tidak sabar, mudah emosi, atau tidak peduli terhadap pengguna jalan lain.',
+   'Peserta cukup bisa mengendalikan sikap, tetapi masih terlihat terburu-buru, defensif, atau kurang sabar.',
+   'Peserta menunjukkan sikap cukup baik, patuh, dan dapat diarahkan selama proses tes.',
+   'Peserta memiliki sikap berkendara yang baik, tenang, sopan, dan menjaga keselamatan pengguna jalan lain.',
+   'Peserta sangat matang secara attitude; sabar, defensif dalam arti positif, tidak agresif, menjaga citra perusahaan, dan konsisten mengutamakan keselamatan.']
 ];
 
-// ── SETUP PANEL ──
+// Penjelasan aspek (ditampilkan saat ikon ⓘ diklik)
+var aspekInfo = [
+  'Menilai kemampuan peserta dalam mengoperasikan pedal gas, rem, kopling, serta perpindahan transmisi secara halus, tepat, dan aman sesuai kondisi kendaraan.',
+  'Menilai kemampuan peserta dalam mengendalikan arah kendaraan, menjaga kestabilan laju, mengatur posisi kendaraan, serta melakukan koreksi arah dengan aman.',
+  'Menilai pemahaman peserta terhadap kondisi dasar kendaraan, fungsi komponen penting, risiko keselamatan, dan prinsip safety sebelum serta saat berkendara.',
+  'Menilai kebiasaan peserta sebelum menjalankan kendaraan, seperti memastikan posisi duduk, penggunaan seatbelt, kondisi sekitar, dashboard, rem, spion, dan kesiapan berkendara.',
+  'Menilai fokus peserta selama berkendara, kemampuan membaca situasi sekitar, mengantisipasi kendaraan/orang/obstacle, dan mengambil keputusan aman.',
+  'Menilai kebiasaan peserta menggunakan spion dan lampu sein untuk memastikan kondisi sekitar sebelum berbelok, pindah jalur, mundur, parkir, atau manuver.',
+  'Menilai kemampuan peserta dalam mengambil keputusan saat mendahului, berpindah jalur, mengatur ruang gerak, dan melakukan manuver dengan aman.',
+  'Menilai kemampuan peserta dalam melakukan parkir, mundur, reposisi kendaraan, menjaga jarak aman, dan menghindari obstacle di area terbatas.',
+  'Menilai pemahaman peserta terhadap rambu, marka, prioritas jalan, aturan lalu lintas, dan kepatuhan terhadap ketentuan berkendara.',
+  'Menilai sikap peserta saat berkendara, termasuk kesabaran, kepatuhan, tidak agresif, menghargai pengguna jalan lain, dan menjaga citra perusahaan.'
+];
+
+function toggleAspekInfo(i, btn) {
+  var panel = document.getElementById('ai-'+i);
+  var isOpen = panel.classList.contains('show');
+  // Tutup semua panel info lain
+  document.querySelectorAll('.aspek-info').forEach(function(p){ p.classList.remove('show'); });
+  document.querySelectorAll('.ar-info-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (!isOpen) {
+    panel.classList.add('show');
+    btn.classList.add('active');
+  }
+}
 function toggleSetup() {
   var body = document.getElementById('setup-body');
   var icon = document.getElementById('chevron-icon');
@@ -400,9 +441,14 @@ function buildAspeks() {
     });
     d.innerHTML =
       '<span class="ar-no">'+(i+1)+'</span>' +
-      '<span class="ar-name">'+asp.nama+'</span>' +
+      '<span class="ar-name-wrap"><span class="ar-name">'+asp.nama+'</span>' +
+        '<button class="ar-info-btn" onclick="toggleAspekInfo('+i+',this)" title="Lihat penjelasan aspek">' +
+          '<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+        '</button>' +
+      '</span>' +
       '<span class="ar-bobot">'+(asp.bobot*100).toFixed(0)+'%</span>' +
       '<div class="nilai-sel">'+opts+'</div>' +
+      '<div class="aspek-info" id="ai-'+i+'"><strong>Tentang Aspek Ini</strong>'+aspekInfo[i]+'</div>' +
       '<div class="nilai-desc" id="nd-'+i+'"></div>';
     c.appendChild(d);
   });
@@ -571,7 +617,7 @@ function shareResult() {
     '📊 Kategori: *' + lastResult.kategori + '*\n' +
     '🔢 Total skor: ' + lastResult.totalNilai + '/5.00\n' +
     '——————————————\n' +
-    'PT. Kawan Lama Sejahtera';
+    'Kawan Lama Group';
 
   if (navigator.share) {
     navigator.share({title:'Hasil Tes Drive', text:text}).catch(function(){});
@@ -593,7 +639,9 @@ function ulang() {
   pilihan = new Array(10).fill(null);
   document.querySelectorAll('.nv-in').forEach(function(r){r.checked=false;});
   document.querySelectorAll('.aspek-row').forEach(function(r){r.classList.remove('done');});
-  document.querySelectorAll('.nilai-desc').forEach(function(d){d.className='nilai-desc';d.innerHTML='';});
+  document.querySelectorAll('.aspek-info').forEach(function(d){d.classList.remove('show');});
+  document.querySelectorAll('.ar-info-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.nilai-desc').forEach(function(d){d.className='nilai-desc';d.innerHTML='';}); 
   document.getElementById('live-skor').textContent='0.00';
   document.getElementById('prog-text').textContent='0 / 10';
   document.getElementById('prog-fill').style.width='0%';
