@@ -210,9 +210,14 @@ body{padding-bottom:40px;}
   .print-info-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
   .print-info-table td { padding: 5px 8px; font-size: 11px; border: 1px solid #e5e7eb; }
   .print-info-table td:first-child { color: #6b7280; width: 35%; background: #f9fafb; font-weight: 600; }
-  .print-aspek-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+  .print-aspek-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; table-layout: fixed; }
   .print-aspek-table th { background: #1F3864; color: #fff; padding: 6px 8px; font-size: 10px; text-align: left; }
-  .print-aspek-table td { padding: 5px 8px; font-size: 11px; border: 1px solid #e5e7eb; }
+  .print-aspek-table th:nth-child(1) { width: 4%; }
+  .print-aspek-table th:nth-child(2) { width: 20%; }
+  .print-aspek-table th:nth-child(3) { width: 7%; }
+  .print-aspek-table th:nth-child(4) { width: 12%; }
+  .print-aspek-table th:nth-child(5) { width: 57%; }
+  .print-aspek-table td { padding: 6px 8px; font-size: 11px; border: 1px solid #e5e7eb; word-wrap: break-word; }
   .print-aspek-table tr:nth-child(even) td { background: #f9fafb; }
   .print-aspek-table .td-val { text-align: center; font-weight: 800; }
   .print-aspek-table .td-tv { text-align: right; font-weight: 700; color: #1F3864; }
@@ -684,12 +689,13 @@ function cetakHasil() {
   aspeks.forEach(function(asp, i) {
     var n = [r.n1,r.n2,r.n3,r.n4,r.n5,r.n6,r.n7,r.n8,r.n9,r.n10][i];
     var tv = (n * asp.bobot).toFixed(2);
+    var desc = aspekDesc[i][n-1];
     rows += '<tr>' +
-      '<td>'+(i+1)+'</td>' +
-      '<td>'+asp.nama+'</td>' +
-      '<td style="text-align:center">'+(asp.bobot*100).toFixed(0)+'%</td>' +
-      '<td class="td-val">'+n+' – '+labels[n]+'</td>' +
-      '<td class="td-tv">'+tv+'</td>' +
+      '<td style="vertical-align:top">'+(i+1)+'</td>' +
+      '<td style="vertical-align:top">'+asp.nama+'</td>' +
+      '<td style="text-align:center;vertical-align:top">'+(asp.bobot*100).toFixed(0)+'%</td>' +
+      '<td class="td-val" style="vertical-align:top">'+n+'<br><span style="font-weight:400;font-size:10px;color:#6b7280">'+labels[n]+'</span></td>' +
+      '<td style="vertical-align:top"><div style="font-size:10px;color:#374151;line-height:1.5">'+desc+'</div><div class="td-tv" style="margin-top:3px">'+tv+'</div></td>' +
     '</tr>';
   });
 
@@ -717,7 +723,7 @@ function cetakHasil() {
       '<tr><td>Keterangan</td><td style="font-weight:700;color:'+c.fg+'">'+info.ket+' – '+info.kat+'</td></tr>' +
     '</table>' +
     '<table class="print-aspek-table">' +
-      '<thead><tr><th>No</th><th>Aspek Penilaian</th><th>Bobot</th><th>Nilai</th><th>Total</th></tr></thead>' +
+      '<thead><tr><th>No</th><th>Aspek Penilaian</th><th>Bobot</th><th>Nilai</th><th>Keterangan & Skor</th></tr></thead>' +
       '<tbody>'+rows+'</tbody>' +
       '<tfoot><tr class="print-total-row"><td colspan="4">TOTAL NILAI AKHIR</td><td class="td-tv">'+r.totalNilai+' / 5.00</td></tr></tfoot>' +
     '</table>' +
